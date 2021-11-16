@@ -3,9 +3,9 @@
 
 '''
   IMPLEMENTAR:
-    * ser capaz de utilizar mais de um sibmolo nao terminal
     * ser capaz de utilizar mais do que 9 regras de producao por simbolo nao terminal
     * reconhecer cadeia vazia (v) (K, D, Z)
+    * logica para contar qual regra esta rodando nao esta muito boa
 '''
 
 w = input("entre a cadeia: ")
