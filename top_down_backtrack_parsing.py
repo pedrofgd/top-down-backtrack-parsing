@@ -3,17 +3,11 @@
 
 '''
   IMPLEMENTAR:
-    * ser capaz de utilizar mais de um sibmolo nao terminal
-    * ser capaz de utilizar mais do que 9 regras de producao por simbolo nao terminal
-    * reconhecer cadeia vazia (v) (K, D, Z)
     * adicionar o simbolo $ no final de beta
 '''
 
-# Implementar cadeia vazia (o restante acho que esta funcionando)
-
 # Obs:
-# * 0 nao e reconhecido como primeiro simbolo
-# * Em w = 1+1 o primeiro 1 esta sendo reconhecido, mas o + ainda nao
+# * 0 nao e reconhecido como primeiro simbolo (corrigir porque da loop)
 
 w = input("entre a cadeia: ")
 
@@ -111,11 +105,16 @@ def top_down_backtrack_parsing():
 
     looking_for_symbol = ''
     if beta[0] in non_terminals:
-      looking_for_symbol = beta[0]
+      looking_for_symbol = beta[0][0]
     else:
-      looking_for_symbol = alpha[len(alpha)-1] # se topo de beta (beta[0]) for um terminal, olha para topo de alpha para expandir
+      looking_for_symbol = alpha[len(alpha)-1][0] # se topo de beta (beta[0]) for um terminal, olha para topo de alpha para expandir
 
     looking_for_symbol_number_of_rules = prod_rules_count_for_symbol.get(looking_for_symbol)
+    print('rule_count:',rule_count)
+    print('looking_for_symbol:',looking_for_symbol)
+    print('looking_for_symbol_number_of_rules:',looking_for_symbol_number_of_rules)
+    print('rule_symbol_count:',rule_symbol_count)
+    print('len(enumerable_prod_rules) -1:',rule_symbol_count)
     if rule_count > looking_for_symbol_number_of_rules and rule_symbol_count > len(enumerable_prod_rules) -1: 
       return False
 
@@ -127,49 +126,59 @@ def top_down_backtrack_parsing():
         backtracking()
 
     internal_rule_count = 0
-    while(beta[0] != list_w[symbols_count]):
+    while(beta[0] != list_w[symbols_count] and beta[0] != 'v'):
       print()
-      if symbols_count >= qty_w or internal_rule_count > looking_for_symbol_number_of_rules: 
-        print("symbols_count: {}, qty_w: {}, internal_rule_count: {}, looking_for_symbols_rules_number: {}, looking_for_symbol: {}"          
-          .format(symbols_count, qty_w, internal_rule_count, looking_for_symbol_number_of_rules, looking_for_symbol))
-        return False
+      if beta[0] != 'v':
+        if symbols_count >= qty_w or internal_rule_count > looking_for_symbol_number_of_rules: 
+          print("symbols_count: {}, qty_w: {}, internal_rule_count: {}, looking_for_symbols_rules_number: {}, looking_for_symbol: {}"          
+            .format(symbols_count, qty_w, internal_rule_count, looking_for_symbol_number_of_rules, looking_for_symbol))
+          return False
 
-      # acho que isso:
-      # if internal_rule_count < looking_for_symbol_number_of_rules:
-      # nao vai mais servir de nada
+        # acho que isso:
+        # if internal_rule_count < looking_for_symbol_number_of_rules:
+        # nao vai mais servir de nada
 
-      if internal_rule_count <= looking_for_symbol_number_of_rules:
-        if len(alpha) > 0 :
-          if beta[0] in non_terminals:
-            if beta[0] != looking_for_symbol:
-              looking_for_symbol = beta[0]
-              looking_for_symbol_number_of_rules = prod_rules_count_for_symbol.get(looking_for_symbol)
-              if rule_count > looking_for_symbol_number_of_rules and rule_symbol_count > len(enumerable_prod_rules) -1: 
-                return False
-              internal_rule_count = 0
-            rule_symbol = beta[0][0]
-            expanse_result = tree_expanse(internal_rule_count, rule_symbol)
-            if expanse_result == False:
-              backtracking()
+        if internal_rule_count <= looking_for_symbol_number_of_rules:
+          if len(alpha) > 0 :
+            if beta[0] in non_terminals:
+              if beta[0] != looking_for_symbol:
+                looking_for_symbol = beta[0]
+                looking_for_symbol_number_of_rules = prod_rules_count_for_symbol.get(looking_for_symbol)
+                if rule_count > looking_for_symbol_number_of_rules and rule_symbol_count > len(enumerable_prod_rules) -1: 
+                  return False
+                internal_rule_count = 0
+              rule_symbol = beta[0][0]
+              expanse_result = tree_expanse(internal_rule_count, rule_symbol)
+              if expanse_result == False:
+                backtracking()
 
-          else:
-            if beta[0] != list_w[symbols_count]:
-              internal_rule_count += 1
-              backtracking()
+            else:
+              if beta[0] != list_w[symbols_count]:
+                internal_rule_count += 1
+                backtracking()
 
-    rule_count += 1
-    
-    # sucessfull match
-    if beta[0] == list_w[symbols_count]:
-      print("sucessful match for: beta {} and w {}, at count {}\n".format(beta, w, symbols_count))
+      else:
+        print("cadeia vazia encontrada. prosseguindo...")
+
+    # rule_count += 1
+
+    # sucessfull match especial caso encontre cadeia vazia
+    if beta[0] == 'v':
+      print("sucessful match for empty: beta {} and w {}, at count {}\n".format(beta, w, symbols_count))
       sucessfull_match()
-      generated_w.append(alpha[len(alpha)-1])
-      print("generated w by now:", generated_w)
       rule_count = 0
-      symbols_count += 1
-    else:
-      rule_count += 1
-      print("incrementando rule_count +1 = {}".format(rule_count))
+    else:  
+      # sucessfull match
+      if beta[0] == list_w[symbols_count]:
+        print("sucessful match for: beta {} and w {}, at count {}\n".format(beta, w, symbols_count))
+        sucessfull_match()
+        generated_w.append(alpha[len(alpha)-1])
+        print("generated w by now:", generated_w)
+        rule_count = 0
+        symbols_count += 1
+      else:
+        rule_count += 1
+        print("incrementando rule_count +1 = {}".format(rule_count))
 
     if w == list_to_string(generated_w):
       return True
