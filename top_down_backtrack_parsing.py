@@ -4,6 +4,14 @@
 '''
   IMPLEMENTAR:
     * adicionar o simbolo $ no final de beta
+
+    * corrigir o loop quando 0 é o primeiro simbolo de w 
+      (em geral acho que nao esta retornando False quando cadeia nao existe, 
+        '0+1(' entra em loop, por exemplo))
+
+    * (1+2)+1 e outras cadeias com parentesis dao erro
+    
+    * refatorar codigo
 '''
 
 # Obs:
