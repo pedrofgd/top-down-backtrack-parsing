@@ -2,19 +2,9 @@
 # analise sintatica descendente com retorno
 
 '''
-  IMPLEMENTAR:
-    * fazer backtracking quando w == generated_w, mas beta[0] != '$'
-    
+  IMPLEMENTAR:    
     * refatorar codigo
 '''
-
-# Obs:
-# * 0 nao e reconhecido como primeiro simbolo (corrigir porque da loop)
-
-# Para implementacao do $
-# * quando a cadeia estiver formada, mas beta != $, precisa começar a fazer 
-# backtracking até o ponto viável para recomeçar a expansão
-# como saber quantos backtracking fazer?
 
 w = input("entre a cadeia: ")
 
@@ -41,6 +31,7 @@ alpha = [] # list 1 para o historico de regras de produção
 beta = ['$'] # list 2 para a configuracao das folhas da arvore de derivacao
 generated_w = []
 belongs_to_language = False
+testing_beta_remaining = False
 
 def tree_expanse(rule_count, rule_symbol):
   if rule_symbol == None:
@@ -110,6 +101,14 @@ def top_down_backtrack_parsing():
   while(symbols_count <= qty_w): # enquanto nao encontrar todos os simbolos
     debug(alpha, beta, w, symbols_count)
 
+    # Teste: bem possível que quebre:
+    # if len(beta) > len(w) - len(generated_w):
+    #   print("tentativa de backtracking porque a cadeia gerada a partir daqui teria mais simbolos do que w")
+    #   print("len(beta): ", len(beta))
+    #   print("len(w): ", len(w))
+    #   print("len(generated_w): ", len(generated_w))
+    #   backtracking()
+    # else:
     looking_for_symbol = ''
     if beta[0] == w[symbols_count]:
       print("sucessful match for: beta {} and w {}, at count {}\n".format(beta, w, symbols_count))
@@ -212,7 +211,7 @@ def top_down_backtrack_parsing():
           print("sucessful match for: beta {} and w {}, at count {}\n".format(beta, w, symbols_count))
           sucessfull_match()
           generated_w.append(alpha[len(alpha)-1])
-          print("generated w by now:", generated_w)
+          print("generated w by now:", generated_w, " <---")
           rule_count = 0
           symbols_count += 1
         else:
@@ -220,6 +219,27 @@ def top_down_backtrack_parsing():
           print("incrementando rule_count +1 = {}".format(rule_count))
 
       if w == list_to_string(generated_w):
+        if beta[0] != '$':
+          symbols_count = 0
+          rule_count = 0
+
+          while(beta[0] != '$'):
+            if rule_count > prod_rules_count_for_symbol.get(looking_for_symbol):
+              return False
+
+            looking_for_symbol = beta[0]
+            tree_expanse(rule_count, beta[0][0])
+
+            if beta[0] == 'v':
+              symbols_count += 1
+              rule_count = 0
+              sucessfull_match()
+
+            if beta[0] not in non_terminals:
+              backtracking()
+            
+            rule_count += 1
+            
         return True
 
 def split_w(w):
@@ -246,3 +266,5 @@ def debug(alpha, beta, w, symbols_count):
 result = top_down_backtrack_parsing()
 
 print("\nDoes w = {0} belongs to the language: {1}".format(w, result))
+if result == True:
+  print("alpha:", alpha)
