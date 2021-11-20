@@ -4,6 +4,15 @@ Análise sintática descendente com retorno
 # Histórico
 
 ## 20/11/2021
+
+### Solução para resolver erro em algumas cadeias quie são reconhecidas, mas ainda resta elementos não vazios em beta
+
+Na cadeia '(12-6/5' havia um erro no algoritmo.
+
+Foi adicionado uma verificação depois de ter um generated_w igual a w, que, antes de tentar expandir os simbolos não terminais na tentativa de obter apenas cadeias vazias, verifica se em beta há algum terminal diferente de 'v' e '$'. Caso exista, não será necessário expandir, porque já sabemos que o restante não é vazio.
+
+![Solução para resolver erro em algumas cadeias quie são reconhecidas, mas ainda resta elementos não vazios em beta](assets/solve_error_in_some_false_w.png)
+
 ### Solução para passar a aceitar números negativos
 
 A cadeia '-1+2', por exemplo, era marcada como False, porque F0 era testado, gerava um terminal em beta[0]: '(', não era compatível com w[symbols_count]; então expandia para F1, que gerava um não terminal, que, então, era expandido para N0 até N8. Como N só gera símbolos terminais em beta[0], ao testar todas as regras, nenhuma era compatível e caía na condição de testar uma regra de número maior do que existe para aquele símbolo não terminal e retornava False.

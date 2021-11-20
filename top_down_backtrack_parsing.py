@@ -231,7 +231,13 @@ def top_down_backtrack_parsing():
           symbols_count = 0
           rule_count = 0
 
+          for symbol in beta:
+            if symbol not in non_terminals and symbol != 'v' and symbol != '$':
+              return False
+
           while(beta[0] != '$'):
+            print('looking_for_symbol:', looking_for_symbol)
+            print('prod_rules_count_for_symbol:', prod_rules_count_for_symbol.get(looking_for_symbol))
             if rule_count > prod_rules_count_for_symbol.get(looking_for_symbol):
               return False
 
