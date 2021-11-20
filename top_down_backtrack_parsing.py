@@ -167,33 +167,41 @@ def top_down_backtrack_parsing():
             return False
           
           if internal_rule_count > looking_for_symbol_number_of_rules - 1:
-            return False
+            print("rule_count", rule_count)
+            next_rule_to_check = int(alpha[len(alpha)-1][1]) + 1
+            print("next_rule_to_check", next_rule_to_check)
+            if next_rule_to_check < prod_rules_count_for_symbol.get(alpha[len(alpha)-1][0]):
+              backtracking()
+              tree_expanse(next_rule_to_check, beta[0][0])
+            else:
+              return False
 
-          # acho que isso:
-          # if internal_rule_count < looking_for_symbol_number_of_rules:
-          # nao vai mais servir de nada
-
-          if internal_rule_count <= looking_for_symbol_number_of_rules:
-            if len(alpha) > 0 :
-              if beta[0] in non_terminals:
-                if beta[0] != looking_for_symbol:
-                  looking_for_symbol = beta[0]
-                  looking_for_symbol_number_of_rules = prod_rules_count_for_symbol.get(looking_for_symbol)
-                  if rule_count > looking_for_symbol_number_of_rules and rule_symbol_count > len(enumerable_prod_rules) -1: 
-                    return False
-                  internal_rule_count = 0
-                rule_symbol = beta[0][0]
-                expanse_result = tree_expanse(internal_rule_count, rule_symbol)
-                if expanse_result == False:
-                  backtracking()
-
-              else:
-                if beta[0] != list_w[symbols_count]:
-                  internal_rule_count += 1
-                  backtracking()
-                
           else:
-            return False
+            # acho que isso:
+            # if internal_rule_count < looking_for_symbol_number_of_rules:
+            # nao vai mais servir de nada
+
+            if internal_rule_count <= looking_for_symbol_number_of_rules:
+              if len(alpha) > 0 :
+                if beta[0] in non_terminals:
+                  if beta[0] != looking_for_symbol:
+                    looking_for_symbol = beta[0]
+                    looking_for_symbol_number_of_rules = prod_rules_count_for_symbol.get(looking_for_symbol)
+                    if rule_count > looking_for_symbol_number_of_rules and rule_symbol_count > len(enumerable_prod_rules) -1: 
+                      return False
+                    internal_rule_count = 0
+                  rule_symbol = beta[0][0]
+                  expanse_result = tree_expanse(internal_rule_count, rule_symbol)
+                  if expanse_result == False:
+                    backtracking()
+
+                else:
+                  if beta[0] != list_w[symbols_count]:
+                    internal_rule_count += 1
+                    backtracking()
+                  
+            else:
+              return False
 
         else:
           print("cadeia vazia encontrada. prosseguindo...")
